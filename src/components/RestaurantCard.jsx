@@ -1,18 +1,26 @@
-import { foodImage, styleCard } from "../utils/constants.js";
-const RestaurantCard=(props)=>{
-    const {resData}=props
-    const {name,cuisines,avgRating,costForTwo}=resData?.info;
-    
-    return(
-      <div className="res-card" style={styleCard}>
-        <img src={foodImage} alt="no"  className="biriyani-img"/>
-        <h3>{name}</h3>
-        <h4>{cuisines.join(",")}</h4>
-        <h5>{avgRating}</h5>
-        <h6>{costForTwo}</h6>
-      </div>
-    )
-  
-  }
+import { foodImage } from "../utils/constants.js";
 
-  export default RestaurantCard;
+const RestaurantCard = (props) => {
+  const { resData } = props;
+  const { name, cuisines, avgRating, costForTwo } = resData?.info;
+
+  return (
+    <div className="res-card bg-white h-96 w-64 rounded-lg shadow-lg overflow-hidden transition-transform transform hover:scale-105 flex flex-wrap">
+      <img
+        src={foodImage}
+        alt="food"
+        className="w-full h-40 object-cover"
+      />
+      <div className="p-4">
+        <h3 className="text-lg font-semibold text-gray-800">{name}</h3>
+        <h4 className="text-sm text-gray-500 mt-1">{cuisines.join(", ")}</h4>
+        <div className="flex items-center justify-between mt-2">
+          <h5 className="text-yellow-500 font-bold">{avgRating} ★</h5>
+          <h6 className="text-sm text-gray-600">{costForTwo}</h6>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default RestaurantCard;
