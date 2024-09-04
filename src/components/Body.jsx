@@ -1,9 +1,10 @@
-import { useEffect, useState } from "react";
 // import resList from "../utils/mockData";
-import RestaurantCard from "./RestaurantCard";
+import RestaurantCard, { withOpenLabel } from "./RestaurantCard";
 import { Link } from "react-router-dom";
 import useRestaurant from "../utils/useRestaurant";
 import useOnlineStatus from "../utils/useOnlineStatus";
+import { useContext } from "react";
+import UserContext from "../utils/UserContext";
 
 const Body = () => {
   const {listOfRestaurant,filteredRestaurant, setFilteredRestaurant, search,  setSearch,} = useRestaurant();
@@ -11,6 +12,10 @@ const Body = () => {
   const onlineStatus=useOnlineStatus()
 
   if(onlineStatus===false) return <div><h1>Connection problem</h1> </div>  
+
+ const RestaurantCardOpened=withOpenLabel(RestaurantCard)  
+
+ const {loggedInUser,setUsername}=useContext(UserContext)
 
   return (
     <div className="body">
@@ -65,13 +70,22 @@ const Body = () => {
           >
             search
           </button>
+          <input className="border-4" type="text" value={loggedInUser} onChange={(e)=>(setUsername(e.target.value))} />
+
         </div>
       </div>
       <div className="res-container flex flex-wrap px-20 py-6 gap-x-4 gap-y-8">
         {filteredRestaurant.map((restaurant) => (
           <Link key={restaurant.info.id} to={"/resinfo/" + restaurant.info.id}>
             {" "}
-            <RestaurantCard resData={restaurant} />
+            {restaurant.info.avgRating>=4.5?(
+              <RestaurantCardOpened resData={restaurant}/>
+            ):(  
+              <RestaurantCard resData={restaurant} />
+ 
+            )
+
+            }
           </Link>
         ))}
       </div>

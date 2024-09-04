@@ -1,38 +1,47 @@
 import { useParams } from "react-router-dom";
 import useRestaurantMenu from "../utils/useRestaurantMenu";
+import RestaurantCatogories from "./RestaurantCategories";
+import { useState } from "react";
 
-const RestaurantMenu=()=>{
+const RestaurantMenu = () => {
+  const { resId } = useParams();
+  const restaurantInfo = useRestaurantMenu(resId);
+  const[showIndex,setShowIndex]=useState(null)
 
-    const{resId}=useParams()
-    const restaurantInfo=useRestaurantMenu(resId)
+  if (restaurantInfo === null) return <div className="text-center py-20">Loading...</div>;
 
-    
-    if(restaurantInfo===null) return <div>hello</div>
+  const { name, costForTwoMessage, cuisines, avgRatingString } =
+    restaurantInfo?.cards[2]?.card?.card?.info;
 
+  const categories = restaurantInfo?.cards[4]?.groupedCard?.cardGroupMap?.REGULAR?.cards.filter(
+    (c) =>
+      c.card?.["card"]?.["@type"] === "type.googleapis.com/swiggy.presentation.food.v2.ItemCategory"
+  );
 
-    const {name,costForTwoMessage,cuisines,avgRatingString }=restaurantInfo?.cards[2]?.card?.card?.info;
+  return (
+    <div className="max-w-4xl mx-auto px-4 py-8">
+      {/* Restaurant Information */}
+      <div className="text-center mb-8">
+        <h1 className="font-bold text-3xl text-gray-800">{name}</h1>
+        <p className="text-lg text-gray-600 mt-2">{costForTwoMessage}</p>
+        <p className="text-lg text-gray-600">{cuisines.join(" , ")}</p>
+        <p className="text-sm text-gray-500 mt-1">{avgRatingString}</p>
+      </div>
 
-    const {itemCards}=restaurantInfo?.cards[4]?.groupedCard?.cardGroupMap?.REGULAR?.cards[2]?.card?.card;
-    
-
-    return (
-        <div className="menu">
-            <h1>{name}</h1>
-            <p>{costForTwoMessage} </p>
-        <p>{cuisines.join(' , ')}</p>
-        <p>{avgRatingString}</p>
-        <h2>Menu</h2>
-            <ol>
-                {
-                    itemCards.map((item)=>{
-                        return(
-                    <li key={item.card.info.id}> {item.card.info.name} {item.card.info.price/100 || item.card.info.defaultPrice/100} </li>
-                        )
-                })
-                }
-            </ol>
-        </div>
-    )
-}
+      {/* Categories */}
+      <div className="space-y-6">
+        {categories.map((category,index) => 
+           (
+            <RestaurantCatogories
+              key={category.card.card.itemCards.map((c) => c.card.info.id)}
+              data={category.card.card} showItems={index===showIndex}
+              setShowIndex={()=>setShowIndex(index===showIndex?null:index)}
+            />
+          )
+        )}
+      </div>
+    </div>
+  );
+};
 
 export default RestaurantMenu;
